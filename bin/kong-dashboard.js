@@ -5,7 +5,7 @@ var argv = parseArgs(process.argv.slice(2));
 var child_process = require('child_process');
 
 // validate options
-var validOptions = ['_', 'a', 'p'];
+var validOptions = ['_', 'a', 'p', 'b'];
 function hasInvalidOptions (argv) {
     var isInvalid = false;
     Object.keys(argv).some(function (optionName) {
@@ -22,7 +22,7 @@ var validCommands = ['start', 'build']
 if (argv.help || hasInvalidOptions(argv) || validCommands.indexOf(argv._[0]) < 0) {
     console.log("Usage:");
     console.log(" * kong-dashboard build");
-    console.log(" * kong-dashboard start [-p 8080] [-a user=password]");
+    console.log(" * kong-dashboard start [-p 8080] [-a user=password] [-b basepath]");
     process.exit();
 }
 
@@ -35,6 +35,7 @@ if (argv._[0] === 'build') {
 if (argv._[0] === 'start') {
     var port = argv.p ? argv.p : 8080;
     var auth = argv.a;
+    var basepath = argv.b ? argv.b : ''
 
     // launch server
     console.log('Launching webserver');
@@ -45,6 +46,9 @@ if (argv._[0] === 'start') {
         auth = auth.split('=');
         process.env['kong-dashboard-name'] = auth[0];
         process.env['kong-dashboard-pass'] = auth[1];
+    }
+    if(basepath) {
+        process.env['kong-dashboard-basepath'] = basepath;
     }
     var server = child_process.fork(__dirname + '/server', [], {
         env: process.env

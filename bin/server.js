@@ -14,6 +14,7 @@ var url_parser = require('url');
 
 var name = process.env['kong-dashboard-name'];
 var pass = process.env['kong-dashboard-pass'];
+var basepath = process.env['kong-dashboard-basepath'];
 
 /////////////////////////
 // Serving angular app //
@@ -138,11 +139,12 @@ var app = koa();
 app.use(addSlashes());
 
 // serve static page
-app.use(mount('/', webapp));
+app.use(mount('/'+basepath, webapp));
 
 // serve proxy server
-app.use(mount('/proxy', proxyapp));
+app.use(mount('/'+basepath+'/proxy', proxyapp));
 
 app.listen(process.env['kong-dashboard-port']);
 
 console.log('Server is running on port ' + process.env['kong-dashboard-port']);
+console.log('Server is running on basepath ' + process.env['kong-dashboard-basepath']);
